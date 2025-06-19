@@ -170,18 +170,21 @@
 
 &u2phy1_otg {
     u-boot,dm-pre-reloc;
+	dr_mode = "host";
 	status = "okay";
     phy-supply = <&vcc5v0_usb>;
 };
 
 &u2phy2_host {
     u-boot,dm-pre-reloc;
+	dr_mode = "host";
 	status = "okay";
     phy-supply = <&vcc5v0_usb>;
 };
 
 &u2phy3_host {
     u-boot,dm-pre-reloc;
+	dr_mode = "host";
 	status = "okay";
     phy-supply = <&vcc5v0_usb>;
 };
