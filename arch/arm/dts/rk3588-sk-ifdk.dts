@@ -37,7 +37,6 @@
 		enable-active-high;
 		gpio = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>; // Turn on user led
 		regulator-boot-on;
-		regulator-always-on;
 		vin-supply = <&vcc5v0_sys>;
 	};
 
@@ -66,7 +65,6 @@
         u-boot,dm-pre-reloc;
 		compatible = "regulator-fixed";
 		regulator-name = "vcc5v0_usb";
-		regulator-always-on;
 		regulator-boot-on;
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
@@ -77,7 +75,6 @@
         u-boot,dm-pre-reloc;
 		compatible = "regulator-fixed";
 		regulator-name = "vcc3v3_pcie30";
-		regulator-always-on;
 		regulator-boot-on;
         regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
@@ -153,6 +150,11 @@
 	status = "okay";
 };
 
+&usbdpphy1_grf {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
 &u2phy1 {
     u-boot,dm-pre-reloc;
 	status = "okay";
@@ -177,14 +179,12 @@
 
 &u2phy2_host {
     u-boot,dm-pre-reloc;
-	dr_mode = "host";
 	status = "okay";
     phy-supply = <&vcc5v0_usb>;
 };
 
 &u2phy3_host {
     u-boot,dm-pre-reloc;
-	dr_mode = "host";
 	status = "okay";
     phy-supply = <&vcc5v0_usb>;
 };
@@ -221,6 +221,11 @@
 	phy-supply = <&vcc5v0_usb>;
 };
 
+&usbdp_phy1_dp {
+    u-boot,dm-pre-reloc;
+    status = "okay";
+};
+
 &usbdrd3_1 {
     u-boot,dm-pre-reloc;
     status = "okay";
@@ -228,8 +233,8 @@
 
 &usbdrd_dwc3_1 {
     u-boot,dm-pre-reloc;
-	status = "okay";
-    dr_mode = "host";
-	snps,xhci-trb-ent-quirk;
+	phys = <&u2phy1_otg>, <&usbdp_phy1_u3>;
+	phy-names = "usb2-phy", "usb3-phy";
 	maximum-speed = "super-speed";
+	status = "okay";
 };
