@@ -1,0 +1,350 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+* Copyright (c) 2025 Sergey Kharenko
+* Copyright (c) 2021 Rockchip Electronics Co., Ltd.
+*/
+
+/dts-v1/;
+#include "rk3588.dtsi"
+#include "rk3588-u-boot.dtsi"
+#include <dt-bindings/input/input.h>
+
+/ {
+	model = "SK EthernetCore Board";
+	compatible = "sk,ethercore", "rockchip,rk3588";
+
+    aliases {
+		mmc0 = &sdhci;
+        sata0 = &sata0;
+	};
+
+	sys_led: sys-led {
+        u-boot,dm-pre-reloc;
+        compatible = "regulator-fixed";
+		regulator-name = "sys_led";
+        gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_HIGH>;
+        enable-active-high;
+        regulator-boot-on;
+		vin-supply = <&vcc5v0_sys>;
+	};
+
+    sys_fan: sys-fan {
+        u-boot,dm-pre-reloc;
+		compatible = "regulator-fixed";
+        regulator-name = "sys_led";
+        gpio = <&gpio1 RK_PC6 GPIO_ACTIVE_HIGH>;
+        enable-active-high;
+        regulator-boot-on;
+        vin-supply = <&vcc5v0_sys>;
+	};
+
+	vcc12v_dcin: vcc12v-dcin {
+        u-boot,dm-pre-reloc;
+		compatible = "regulator-fixed";
+		regulator-name = "vcc12v_dcin";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <12000000>;
+		regulator-max-microvolt = <12000000>;
+	};
+
+	vcc5v0_sys: vcc5v0-sys {
+        u-boot,dm-pre-reloc;
+		compatible = "regulator-fixed";
+		regulator-name = "vcc5v0_sys";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		vin-supply = <&vcc12v_dcin>;
+	};
+
+	vcc5v0_usbdcin: vcc5v0-usbdcin {
+        u-boot,dm-pre-reloc;
+		compatible = "regulator-fixed";
+		regulator-name = "vcc5v0_usbdcin";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		vin-supply = <&vcc12v_dcin>;
+	};
+
+	vcc5v0_usb: vcc5v0-usb {
+        u-boot,dm-pre-reloc;
+		compatible = "regulator-fixed";
+		regulator-name = "vcc5v0_usb";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		vin-supply = <&vcc5v0_usbdcin>;
+	};
+
+	vcc5v0_host: vcc5v0-host {
+        u-boot,dm-pre-reloc;
+		compatible = "regulator-fixed";
+		regulator-name = "vcc5v0_host";
+		regulator-boot-on;
+		regulator-always-on;
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		gpio = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc5v0_usb>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc5v0_host_en>;
+	};
+
+	vcc_3v3_sd_s0: vcc-3v3-sd-s0-regulator {
+        u-boot,dm-pre-reloc;
+		compatible = "regulator-fixed";
+		gpio = <&gpio0 RK_PB7 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&sd_s0_pwr>;
+		regulator-name = "vcc_3v3_sd_s0";
+		enable-active-high;
+	};
+};
+
+/* sata pm */
+&combphy0_ps {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+// USB3.1/SATA/PCIe Combo PHY
+&combphy2_psu {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&pinctrl {
+    u-boot,dm-spl;
+	sdmmc {
+        u-boot,dm-spl;
+		sd_s0_pwr: sd-s0-pwr {
+            u-boot,dm-spl;
+			rockchip,pins = <0 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	usb {
+        u-boot,dm-spl;
+		vcc5v0_host_en: vcc5v0-host-en {
+            u-boot,dm-spl;
+			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
+
+&sata0 {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&sdhci {
+    u-boot,dm-pre-reloc;
+	bus-width = <8>;
+	no-sdio;
+	no-sd;
+	non-removable;
+	max-frequency = <200000000>;
+	mmc-hs400-1_8v;
+	mmc-hs400-enhanced-strobe;
+	status = "okay";
+};
+
+&sdmmc {
+    u-boot,dm-pre-reloc;
+	max-frequency = <150000000>;
+	no-sdio;
+	no-mmc;
+	bus-width = <4>;
+	cap-mmc-highspeed;
+	cap-sd-highspeed;
+	disable-wp;
+	sd-uhs-sdr104;
+	vqmmc-supply = <&vccio_sd_s0>;
+	vmmc-supply = <&vcc_3v3_sd_s0>;
+	status = "okay";
+};
+
+&u2phy0_otg {
+    u-boot,dm-pre-reloc;
+	//rockchip,typec-vbus-det;
+	status = "okay";
+};
+
+&u2phy1_otg {
+    u-boot,dm-pre-reloc;
+	phy-supply = <&vcc5v0_host>;
+	status = "okay";
+};
+
+&u2phy2_host {
+    u-boot,dm-pre-reloc;
+	phy-supply = <&vcc5v0_host>;
+	status = "okay";
+};
+
+&u2phy3_host {
+    u-boot,dm-pre-reloc;
+	phy-supply = <&vcc5v0_host>;
+	status = "okay";
+};
+
+&usbdp_phy0 {
+    u-boot,dm-pre-reloc;
+	rockchip,dp-lane-mux = <2 3>;
+    status = "okay";
+/*
+	orientation-switch;
+	svid = <0xff01>;
+	sbu1-dc-gpios = <&gpio4 RK_PA6 GPIO_ACTIVE_HIGH>;
+	sbu2-dc-gpios = <&gpio4 RK_PA7 GPIO_ACTIVE_HIGH>;
+
+	port {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		usbdp_phy0_orientation_switch: endpoint@0 {
+			reg = <0>;
+			//remote-endpoint = <&usbc0_orien_sw>;
+		};
+	
+		usbdp_phy0_dp_altmode_mux: endpoint@1 {
+			reg = <1>;
+			//remote-endpoint = <&dp_altmode_mux>;
+		};
+	};
+*/
+};
+
+&usbdp_phy0_dp {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usbdp_phy0_u3 {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usbdp_phy1 {
+    u-boot,dm-pre-reloc;
+	rockchip,dp-lane-mux = <2 3>;
+	status = "okay";
+};
+
+&usbdp_phy1_dp {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usbdp_phy1_u3 {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&u2phy0 {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&u2phy1 {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&u2phy2 {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&u2phy3 {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usb_host0_ehci {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usb_host0_ohci {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usb_host1_ehci {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usb_host1_ohci {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usb2phy0_grf {
+    u-boot,dm-pre-reloc;
+};
+
+&usb2phy1_grf {
+    u-boot,dm-pre-reloc;
+};
+
+&usb2phy2_grf {
+    u-boot,dm-pre-reloc;
+};
+
+&usb2phy3_grf {
+    u-boot,dm-pre-reloc;
+};
+
+&usbdpphy0_grf {
+    u-boot,dm-pre-reloc;
+};
+
+&usbdpphy1_grf {
+    u-boot,dm-pre-reloc;
+};
+
+/*usb3.1 host2 controller for 5G module*/
+&usbhost3_0 {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usbdrd3_0 {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usbdrd3_1 {
+    u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usbhost_dwc3_0 {
+    u-boot,dm-pre-reloc;
+	dr_mode = "host";
+	status = "okay";
+};
+
+&usbdrd_dwc3_0 {
+    u-boot,dm-pre-reloc;
+	extcon = <&u2phy0>;
+	dr_mode = "otg";
+    status = "okay";
+};
+
+&usbdrd_dwc3_1 {
+    u-boot,dm-pre-reloc;
+	dr_mode = "host";
+	status = "okay";
+};
+
+&vo0_grf {
+    u-boot,dm-pre-reloc;
+};
