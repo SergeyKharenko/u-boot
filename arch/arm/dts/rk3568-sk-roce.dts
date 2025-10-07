@@ -472,6 +472,13 @@
 	};
 };
 
+&sata0 {
+	u-boot,dm-pre-reloc;
+	status = "okay";
+	target-supply = <&dc_12v>;
+	ahci-supply = <&vcc5v0_sys>;
+};
+
 &sdmmc0 {
     u-boot,dm-pre-reloc;
 	status = "okay";
@@ -486,6 +493,11 @@
 	vqmmc-supply = <&vccio_sd>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
+};
+
+&sdhci {
+	mmc-hs400-1_8v;
+	mmc-hs400-enhanced-strobe;
 };
 
 &usb2phy0 {
