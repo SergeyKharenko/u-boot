@@ -74,6 +74,21 @@
 		vin-supply = <&vcc3v3_sys>;
 	};
 
+	vcc5v0_host20: vcc5v0-host20-regulator {
+		u-boot,dm-pre-reloc;
+		compatible = "regulator-fixed";
+		regulator-name = "vcc5v0_host20";
+		regulator-boot-on;
+		regulator-always-on;
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		gpios = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc5v0_usb>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc5v0_host20_en>;
+	};
+
 	vcc5v0_host: vcc5v0-host-regulator {
         u-boot,dm-pre-reloc;
 		compatible = "regulator-fixed";
@@ -507,6 +522,11 @@
 
 	usb {
         u-boot,dm-pre-reloc;
+		vcc5v0_host20_en: vcc5v0-host20-en {
+			u-boot,dm-pre-reloc;
+			rockchip,pins = <1 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
 		vcc5v0_host_en: vcc5v0-host-en {
             u-boot,dm-pre-reloc;
 			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
