@@ -544,10 +544,11 @@
 };
 
 &pmu_io_domains {
-    u-boot,dm-pre-reloc;
 	status = "okay";
+	pmuio1-supply = <&vcc3v3_pmu>;
 	pmuio2-supply = <&vcc3v3_pmu>;
 	vccio1-supply = <&vccio_acodec>;
+	vccio2-supply = <&vcc_1v8>;
 	vccio3-supply = <&vccio_sd>;
 	vccio4-supply = <&vcc_1v8>;
 	vccio5-supply = <&vcc_3v3>;
@@ -565,7 +566,6 @@
 	bus-width = <8>;
 	non-removable;
     supports-emmc;
-    /delete-property/ mmc-hs200-1_8v;
     mmc-hs400-1_8v;
 	mmc-hs400-enhanced-strobe;
 	max-frequency = <200000000>;
@@ -581,7 +581,6 @@
 	no-sdio;
 	no-mmc;
 	bus-width = <4>;
-	cap-mmc-highspeed;
 	cap-sd-highspeed;
 	disable-wp;
 	sd-uhs-sdr104;
@@ -592,6 +591,10 @@
 	status = "okay";
 };
 
+&sdmmc1 {
+	status = "disabled";
+};
+
 &u2phy0_host {
     u-boot,dm-pre-reloc;
 	phy-supply = <&vcc5v0_host>;
@@ -600,7 +603,6 @@
 
 &u2phy0_otg {
     u-boot,dm-pre-reloc;
-	dr_mode = "host";
 	vbus-supply = <&vcc5v0_otg>;
 	status = "okay";
 };
@@ -627,6 +629,16 @@
 	status = "okay";
 };
 
+&usb2phy0_grf {
+	u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
+&usb2phy1_grf {
+	u-boot,dm-pre-reloc;
+	status = "okay";
+};
+
 &usb_host0_ehci {
     u-boot,dm-pre-reloc;
 	status = "okay";
@@ -648,20 +660,16 @@
 };
 
 &usbdrd_dwc3 {
-    u-boot,dm-pre-reloc;
 	dr_mode = "host";
-	extcon = <&usb2phy0>;
     maximum-speed = "super-speed";
 	status = "okay";
 };
 
 &usbdrd30 {
-    u-boot,dm-pre-reloc;
 	status = "okay";
 };
 
 &usbhost_dwc3 {
-    u-boot,dm-pre-reloc;
     phys = <&u2phy0_host>, <&combphy1_usq PHY_TYPE_USB3>;
     phy-names = "usb2-phy", "usb3-phy";
     maximum-speed = "super-speed";
@@ -669,6 +677,5 @@
 };
 
 &usbhost30 {
-    u-boot,dm-pre-reloc;
 	status = "okay";
 };
